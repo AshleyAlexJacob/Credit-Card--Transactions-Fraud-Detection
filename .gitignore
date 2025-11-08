@@ -15,6 +15,9 @@ downloads/
 eggs/
 .eggs/
 lib/
+data/raw/*
+data/processed/data_processed_v0.csv
+artifacts/encoders/*
 lib64/
 parts/
 sdist/
