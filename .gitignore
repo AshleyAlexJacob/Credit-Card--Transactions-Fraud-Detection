@@ -6,7 +6,7 @@ __pycache__/
 myenv/
 # C extensions
 *.so
-
+data/processed/data_resampled_v1.csv
 # Distribution / packaging
 .Python
 build/
