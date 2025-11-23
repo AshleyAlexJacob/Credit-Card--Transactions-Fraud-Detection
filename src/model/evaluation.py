@@ -1,19 +1,20 @@
+import os
 import pickle
 from sklearn.metrics import classification_report, confusion_matrix, ConfusionMatrixDisplay
 import matplotlib.pyplot as plt
 
 class ModelEvaluator:
-    def __init__(self, model_path, X_test, y_test):
+    def __init__(self,  X_test, y_test):
         try:
-            self.model = model_path
             self.X_test = X_test
             self.y_test = y_test
+            self.model_directory = "artifacts/models"
         except Exception as e:
             raise RuntimeError(f"An error occurred while initializing ModelEvaluator: {e}")
 
-    def load_model(self):
+    def load_model(self, model_name):
         try:
-            with open(self.model, 'rb') as f:
+            with open(os.path.join(self.model_directory, model_name), 'rb') as f:
                 self.model = pickle.load(f)
         except Exception as e:
             raise RuntimeError(f"An error occurred while loading the model: {e}")

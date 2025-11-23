@@ -6,8 +6,14 @@ features = ['amt','zip','city_pop','unix_time','year','month','day'
             ,'hour','dayofweek','merchant_encoded','category_encoded',
             'gender_encoded','job_encoded','state_encoded','age','distance_km']
 target = 'is_fraud'
+saved_model_name = "rf_classifier_model.pkl"
 
-data_path = "data/processed/data_resampled_v1.csv"
+# Full length data 36 Lacs Rows - If you want full model
+# data_path = "data/processed/data_resampled_v1.csv"
+
+# condensed data 3 Lacs Rows - For quick testing
+data_path = "data/processed/data_subsampled_v1.csv"
+
 
 def main():
     try:
@@ -20,12 +26,12 @@ def main():
         trainer = ModelTrainer(data=data, target_column=target, features_list=features, test_size=0.3)
         _, accuracy, X_test,y_test = trainer.train_model()
         print(f"Model trained with accuracy: {accuracy:.2f}")
-        trainer.save_model(trainer.model_path)
+        trainer.save_model(saved_model_name)
 
         # Evaluate model
         print("Starting model evaluation...")
-        evaluator = ModelEvaluator(model_path=trainer.model_path, X_test=X_test, y_test=y_test)
-        evaluator.load_model()
+        evaluator = ModelEvaluator(X_test=X_test, y_test=y_test)
+        evaluator.load_model(saved_model_name)
         print("Model loaded for evaluation.")
         report, cm = evaluator.evaluate()
         print("Classification Report:\n", report)

@@ -1,7 +1,9 @@
 from sklearn.model_selection import train_test_split
-from src.model.svm_classifier import SVMClassifier
+# from src.model.svm_classifier import SVMClassifier
+from src.model.rf_classifier import RFClassifier
 from pandas import DataFrame
 import pickle
+import os
 
 class ModelTrainer:
     def __init__(self, data:DataFrame, target_column:str, features_list:list ,test_size:float=0.2, random_state:int=42):
@@ -10,8 +12,10 @@ class ModelTrainer:
             self.target_column = target_column
             self.test_size = test_size
             self.random_state = random_state
-            self.classifier = SVMClassifier()
-            self.model_path = "artifacts/models/svm_model.pkl"
+            self.classifier = RFClassifier()
+            self.model_directory = "artifacts/models"
+            os.makedirs(self.model_directory, exist_ok=True)
+
         except Exception as e:
             raise RuntimeError(f"An error occurred while initializing ModelTrainer: {e}")
     
@@ -44,9 +48,10 @@ class ModelTrainer:
         except Exception as e:
             raise RuntimeError(f"An error occurred during model training: {e}")
     
-    def save_model(self, file_path:str):
+    def save_model(self, model_name:str):
         try:
-            with open(file_path, 'wb') as f:
+
+            with open(os.path.join(self.model_directory, model_name), 'wb') as f:
                 pickle.dump(self.model, f)
         except Exception as e:
             raise RuntimeError(f"An error occurred while saving the model: {e}")

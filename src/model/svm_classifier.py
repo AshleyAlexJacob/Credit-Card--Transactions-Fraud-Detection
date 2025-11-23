@@ -3,7 +3,7 @@ from sklearn.svm import SVC
 class SVMClassifier:
     def __init__(self, kernel='rbf'):
         try:
-            self.model = SVC(kernel=kernel)
+            self.model = SVC(kernel=kernel, probability=False)
         except ImportError:
             raise ImportError("scikit-learn is required to use SVMClassifier. Please install it via 'pip install scikit-learn'.")
         except Exception as e:
