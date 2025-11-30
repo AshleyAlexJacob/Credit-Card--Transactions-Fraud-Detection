@@ -19,16 +19,20 @@ model = ModelInference(model_name="rf_classifier_model.pkl")
 # ======================= Lists =============
 
 categories = ['personal_care', 'health_fitness', 'misc_pos', 'travel',
-       'kids_pets', 'shopping_pos', 'food_dining', 'home',
-       'entertainment', 'shopping_net', 'misc_net', 'grocery_pos',
-       'gas_transport', 'grocery_net']
+      'kids_pets', 'shopping_pos', 'food_dining', 'home',
+      'entertainment', 'shopping_net', 'misc_net', 'grocery_pos',
+      'gas_transport', 'grocery_net']
 merchants = pickle.load(open("artifacts/maps/merchants_list.pkl", 'rb'))
-
 states = pickle.load(open("artifacts/maps/states_list.pkl", 'rb'))
-
 jobs = pickle.load(open("artifacts/maps/jobs_list.pkl", 'rb'))
-
 genders = ['M', 'F']
+
+# Load encoding mappings
+merchant_map = pickle.load(open("artifacts/maps/merchant_map.pkl", 'rb'))
+state_map = pickle.load(open("artifacts/maps/state_map.pkl", 'rb'))
+category_map = pickle.load(open("artifacts/maps/category_map.pkl", 'rb'))
+job_map = pickle.load(open("artifacts/maps/job_map.pkl", 'rb'))
+gender_map = pickle.load(open("artifacts/maps/gender_map.pkl", 'rb'))
 # ======================= Streamlit App UI =============
 st.title("Credit Card Transactions - Fraud Detection System")
 
@@ -52,8 +56,6 @@ unix_time=datetime.timestamp(date_time)
 
 merchant = st.selectbox("Select Merchant", merchants)
 
-merchant_encoded = model.target_encoder.transform(pd.DataFrame({"merchant": [merchant], "is_fraud":[0]}))
-
 category = st.selectbox("Select Category", categories)
 
 gender = st.selectbox("Select Gender", genders)
@@ -68,23 +70,31 @@ age = datetime.today().date().year - dob.year
 
 distance_km = st.number_input("Distance in KM")
 # ======================= Inference ===================
+# Encode categorical variables using the saved mappings
+
+merchant_encoded = merchant_map.get(merchant, 0)  # Default to 0 if not found
+state_encoded = state_map.get(state, 0)
+category_encoded = category_map.get(category, 0)
+job_encoded = job_map.get(job, 0)
+gender_encoded = gender_map.get(gender, 0)
+
 inference_dict = {
-       "amt": amt,
-       "zip": zip,
-       "city_pop": city_pop,
-       "unix_time": unix_time,
-       "year": year,
-       "month": month,
-       "day": day,
-       "hour": hour,
-       "dayofweek": day_of_week,
-       "merchant_encoded": merchant_encoded,
-       "category_encoded": category,
-       'gender_encoded': gender,
-       'job_encoded': job,
-       'state_encoded': state,
-       'age': age,
-       'distance_km': distance_km
+      "amt": amt,
+      "zip": zip,
+      "city_pop": city_pop,
+      "unix_time": unix_time,
+      "year": year,
+      "month": month,
+      "day": day,
+      "hour": hour,
+      "dayofweek": day_of_week,
+      "merchant_encoded": merchant_encoded,
+      "category_encoded": category_encoded,
+      'gender_encoded': gender_encoded,
+      'job_encoded': job_encoded,
+      'state_encoded': state_encoded,
+      'age': age,
+      'distance_km': distance_km
 }
 
 inference_df = convert_dicitonary_to_df(inference_dict)
